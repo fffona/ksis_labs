@@ -27,7 +27,7 @@ def checksum(source_string):
     return answer
 
 def create_icmp_packet(id, seq):
-    icmp_type = 8  # Echo Request
+    icmp_type = 8
     icmp_code = 0
     icmp_checksum = 0
     icmp_id = id
@@ -43,10 +43,9 @@ def create_icmp_packet(id, seq):
     return packet
 
 def traceroute(dest_addr, max_hops=30, timeout=6, resolve_names=True):
-    dest_addr = socket.gethostbyname(dest_addr)
     port = 33434
 
-    print(f"traceroute to {dest_addr} ({dest_addr}), {max_hops} hops max")
+    print(f"Traceroute to {dest_addr} ({socket.gethostbyname(dest_addr)}), {max_hops} hops max")
 
     for ttl in range(1, max_hops + 1):
         times = []  # Список для хранения времени задержки
@@ -80,25 +79,23 @@ def traceroute(dest_addr, max_hops=30, timeout=6, resolve_names=True):
 
                 if resolve_names:
                     try:
-                        curr_name = socket.gethostbyaddr(curr_addr)[0]
+                        curr_name = socket.gethostbyaddr(curr_addr)[0] + f" [{curr_addr}]"
                     except socket.error:
                         curr_name = curr_addr
                 else:
                     curr_name = curr_addr
-                times.append(f"{(time.time() - start_time) * 1000:.2f} ms")
+                times.append(f"{(time.time() - start_time) * 1000:.2f} ms   ")
                 addresses.append(curr_name)
             except:
-                times.append("<1 ms" if (time.time() - start_time) * 1000 < 1 else "*")
-                addresses.append("*")
+                times.append("<1 ms    " if (time.time() - start_time) * 1000 < 1 else "*    ")
+                addresses.append("Request timed out")
             finally:
                 send_socket.close()
                 recv_socket.close()
 
-            if finished:
-                break
 
         unique_addresses = " ".join(set(addresses)) if "*" not in addresses else "*"
-        print(f"{ttl:<3} {unique_addresses:<40} {'  '.join(times)}")
+        print(f"{ttl:<3} {unique_addresses:<50} {' '.join(times)}")
 
         if finished:
             break
