@@ -5,9 +5,6 @@ import time
 import argparse
 
 def checksum(source_string):
-    """
-    Рассчет контрольной суммы для ICMP-пакета.
-    """
     sum = 0
     count_to = (len(source_string) // 2) * 2
     count = 0
@@ -30,9 +27,6 @@ def checksum(source_string):
     return answer
 
 def create_icmp_packet(id, seq):
-    """
-    Создание ICMP-пакета.
-    """
     icmp_type = 8  # Echo Request
     icmp_code = 0
     icmp_checksum = 0
@@ -40,87 +34,80 @@ def create_icmp_packet(id, seq):
     icmp_seq = seq
     icmp_data = b"abcdefghijklmnopqrstuvwxyz"
 
-    # Создание заголовка ICMP
     header = struct.pack("!BBHHH", icmp_type, icmp_code, icmp_checksum, icmp_id, icmp_seq)
     packet = header + icmp_data
 
-    # Расчет контрольной суммы
     icmp_checksum = checksum(packet)
     header = struct.pack("!BBHHH", icmp_type, icmp_code, icmp_checksum, icmp_id, icmp_seq)
     packet = header + icmp_data
-
     return packet
 
-def traceroute(dest_addr, max_hops=30, timeout=1, resolve_names=True):
-    """
-    Основная функция traceroute.
-    """
+def traceroute(dest_addr, max_hops=30, timeout=6, resolve_names=True):
     dest_addr = socket.gethostbyname(dest_addr)
-    port = 33434  # Порт для отправки пакетов (не используется в ICMP)
+    port = 33434
 
     print(f"traceroute to {dest_addr} ({dest_addr}), {max_hops} hops max")
 
     for ttl in range(1, max_hops + 1):
-        # Создание сокета для отправки ICMP-пакетов
-        send_socket = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_ICMP)
-        send_socket.setsockopt(socket.IPPROTO_IP, socket.IP_TTL, ttl)
-
-        # Создание сокета для получения ответов
-        recv_socket = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_ICMP)
-        recv_socket.bind(("", port))
-        recv_socket.settimeout(timeout)
-
-        # Создание и отправка ICMP-пакета
-        packet_id = os.getpid() & 0xFFFF
-        packet = create_icmp_packet(packet_id, ttl)
-        send_socket.sendto(packet, (dest_addr, port))
-
-        start_time = time.time()
-        curr_addr = None
-        curr_name = None
+        times = []  # Список для хранения времени задержки
+        addresses = []  # Список для хранения адресов/имен
         finished = False
+        for attempt in range(3):
+            send_socket = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_ICMP)
+            send_socket.setsockopt(socket.IPPROTO_IP, socket.IP_TTL, ttl)
 
-        try:
-            # Ожидание ответа
-            data, curr_addr = recv_socket.recvfrom(1024)  # Увеличьте размер буфера
-            curr_addr = curr_addr[0]
+            recv_socket = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_ICMP)
+            recv_socket.bind(("", port))
+            recv_socket.settimeout(timeout)
 
-            # Извлечение ICMP-заголовка из пакета (первые 20 байт — это IP-заголовок)
-            icmp_header = data[20:28]
-            icmp_type, code, checksum, received_id, seq = struct.unpack("!BBHHH", icmp_header)
+            packet_id = os.getpid() & 0xFFFF
+            packet = create_icmp_packet(packet_id, ttl)
+            send_socket.sendto(packet, (dest_addr, port))
 
-            if icmp_type == 0:  # Echo Reply
-                finished = True
-
-            # Получение имени узла (если разрешено)
-            if resolve_names:
-                try:
-                    curr_name = socket.gethostbyaddr(curr_addr)[0]
-                except socket.error:
-                    curr_name = curr_addr
-            else:
-                curr_name = curr_addr
-        except:
+            start_time = time.time()
             curr_addr = None
-        finally:
-            send_socket.close()
-            recv_socket.close()
+            curr_name = None
 
-        if curr_addr is not None:
-            print(f"{ttl}\t{curr_name}\t{(time.time() - start_time) * 1000:.2f} ms")
-        else:
-            print(f"{ttl}\t*\t*\t*")
+            try:
+                data, curr_addr = recv_socket.recvfrom(1024)
+                curr_addr = curr_addr[0]
+
+                icmp_header = data[20:28]
+                icmp_type, code, checksum, received_id, seq = struct.unpack("!BBHHH", icmp_header)
+
+                if icmp_type == 0:
+                    finished = True
+
+                if resolve_names:
+                    try:
+                        curr_name = socket.gethostbyaddr(curr_addr)[0]
+                    except socket.error:
+                        curr_name = curr_addr
+                else:
+                    curr_name = curr_addr
+                times.append(f"{(time.time() - start_time) * 1000:.2f} ms")
+                addresses.append(curr_name)
+            except:
+                times.append("<1 ms" if (time.time() - start_time) * 1000 < 1 else "*")
+                addresses.append("*")
+            finally:
+                send_socket.close()
+                recv_socket.close()
+
+            if finished:
+                break
+
+        unique_addresses = " ".join(set(addresses)) if "*" not in addresses else "*"
+        print(f"{ttl:<3} {unique_addresses:<40} {'  '.join(times)}")
 
         if finished:
             break
 
 if __name__ == "__main__":
-    # Парсинг аргументов командной строки
     parser = argparse.ArgumentParser(description="Simple traceroute implementation using ICMP.")
     parser.add_argument("destination", type=str, help="The destination address to trace.")
     parser.add_argument("-n", "--no-resolve", action="store_false", dest="resolve_names",
                         help="Do not resolve IP addresses to hostnames.")
     args = parser.parse_args()
 
-    # Запуск traceroute
     traceroute(args.destination, resolve_names=args.resolve_names)
