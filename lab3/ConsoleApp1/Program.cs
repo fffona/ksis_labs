@@ -145,6 +145,7 @@ class Program
             {
                 SendRequest($"{userInput} {name}");
             }
+            if (userInput == "exit") SendRequest($"{userInput} {name}");
         }
     }
 
@@ -164,7 +165,6 @@ class Program
             try
             {
                 udpSocket = new UdpClient(port);
-                Console.WriteLine($"Сервер успешно запущен: {ip}:{port}");
             }
             catch (SocketException e)
             {
@@ -198,17 +198,17 @@ class Program
                         {
                             users.Add(remoteEndPoint);
                             SendRequest($"Количество пользователей в сети: {users.Count}", remoteEndPoint);
-                            Console.WriteLine($"Новый пользователь в сети: {remoteEndPoint.Address}");
-                            SendMessages(users, $"Новый пользователь подключился к сети: {remoteEndPoint.Address}", remoteEndPoint);
+                            Console.WriteLine($"{GetCurrentTime()} Новый пользователь в сети: {name} ({remoteEndPoint.Address})");
+                            SendMessages(users, $"Новый пользователь подключился к сети: {name} ({remoteEndPoint.Address})", remoteEndPoint);
                         }
                         continue;
                     }
-
+                     
                     if (command == "exit")
                     {
                         users.Remove(remoteEndPoint);
-                        SendMessages(users, $"Пользователь отключился от сети: {remoteEndPoint.Address}", remoteEndPoint);
-                        Console.WriteLine($"Пользователь отключился: {remoteEndPoint.Address}");
+                        SendMessages(users, $"Пользователь отключился от сети: {name} ({remoteEndPoint.Address})", remoteEndPoint);
+                        Console.WriteLine($"{GetCurrentTime()} Пользователь отключился: {name} ({remoteEndPoint.Address})");
                         continue;
                     }
 
