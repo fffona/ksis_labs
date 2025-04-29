@@ -3,12 +3,8 @@
   "WorkspaceRootPath": "C:\\Users\\fona\\Desktop\\\u043A\u0441\u0438\u0441\\ksis_labs\\lab3\\ConsoleApp1\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{11E6227F-B299-4B0D-8AEF-1CC1E2839D87}|ConsoleApp1.csproj|c:\\users\\fona\\desktop\\\u043A\u0441\u0438\u0441\\ksis_labs\\lab3\\consoleapp1\\client.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{11E6227F-B299-4B0D-8AEF-1CC1E2839D87}|ConsoleApp1.csproj|solutionrelative:client.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{11E6227F-B299-4B0D-8AEF-1CC1E2839D87}|ConsoleApp1.csproj|c:\\users\\fona\\desktop\\\u043A\u0441\u0438\u0441\\ksis_labs\\lab3\\consoleapp1\\server.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{11E6227F-B299-4B0D-8AEF-1CC1E2839D87}|ConsoleApp1.csproj|solutionrelative:server.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{11E6227F-B299-4B0D-8AEF-1CC1E2839D87}|ConsoleApp1.csproj|c:\\users\\fona\\desktop\\\u043A\u0441\u0438\u0441\\ksis_labs\\lab3\\consoleapp1\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{11E6227F-B299-4B0D-8AEF-1CC1E2839D87}|ConsoleApp1.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -51,27 +47,15 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "Client.cs",
-              "DocumentMoniker": "C:\\Users\\fona\\Desktop\\\u043A\u0441\u0438\u0441\\ksis_labs\\lab3\\ConsoleApp1\\Client.cs",
-              "RelativeDocumentMoniker": "Client.cs",
-              "ToolTip": "C:\\Users\\fona\\Desktop\\\u043A\u0441\u0438\u0441\\ksis_labs\\lab3\\ConsoleApp1\\Client.cs",
-              "RelativeToolTip": "Client.cs",
-              "ViewState": "AgIAAEAAAAAAAAAAAAAQwE4AAAAVAAAAAAAAAA==",
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\fona\\Desktop\\\u043A\u0441\u0438\u0441\\ksis_labs\\lab3\\ConsoleApp1\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "C:\\Users\\fona\\Desktop\\\u043A\u0441\u0438\u0441\\ksis_labs\\lab3\\ConsoleApp1\\Program.cs*",
+              "RelativeToolTip": "Program.cs*",
+              "ViewState": "AgIAAJQAAAAAAAAAAADwv5wAAAAjAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-06T22:15:44.903Z",
+              "WhenOpened": "2025-04-10T23:59:38.046Z",
               "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Server.cs",
-              "DocumentMoniker": "C:\\Users\\fona\\Desktop\\\u043A\u0441\u0438\u0441\\ksis_labs\\lab3\\ConsoleApp1\\Server.cs",
-              "RelativeDocumentMoniker": "Server.cs",
-              "ToolTip": "C:\\Users\\fona\\Desktop\\\u043A\u0441\u0438\u0441\\ksis_labs\\lab3\\ConsoleApp1\\Server.cs",
-              "RelativeToolTip": "Server.cs",
-              "ViewState": "AgIAAD4AAAAAAAAAAAAgwFUAAAAWAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-06T18:02:40.289Z"
             }
           ]
         },

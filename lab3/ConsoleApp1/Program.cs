@@ -64,7 +64,6 @@ class Program
 
     class User
     {
-        private const int BUFFER_SIZE = 512;
         private UdpClient udpSocket;
         private string ipUser;
         private string ipServer;
@@ -82,7 +81,8 @@ class Program
 
             try
             {
-                udpSocket = new UdpClient(portUser);
+                IPAddress userIp = IPAddress.Parse(ipUser);
+                udpSocket = new UdpClient(new IPEndPoint(userIp, portUser));
             }
             catch (SocketException e)
             {
@@ -151,12 +151,10 @@ class Program
 
     class Server
     {
-        private const int BUFFER_SIZE = 512;
         private UdpClient udpSocket;
         private string ip;
         private int port;
         private List<IPEndPoint> users = new List<IPEndPoint>();
-
         public Server(string ip, int port)
         {
             this.ip = ip;
@@ -164,7 +162,8 @@ class Program
 
             try
             {
-                udpSocket = new UdpClient(port);
+                IPAddress serverIp = IPAddress.Parse(ip);
+                udpSocket = new UdpClient(new IPEndPoint(serverIp, port));
             }
             catch (SocketException e)
             {
@@ -191,14 +190,13 @@ class Program
                     string[] words = message.Split(' ');
                     string name = words[words.Length - 1];
                     string command = string.Join(" ", words, 0, words.Length - 1);
-
                     if (!users.Contains(remoteEndPoint))
                     {
                         if (command == "init")
                         {
                             users.Add(remoteEndPoint);
                             SendRequest($"Количество пользователей в сети: {users.Count}", remoteEndPoint);
-                            Console.WriteLine($"{GetCurrentTime()} Новый пользователь в сети: {name} ({remoteEndPoint.Address})");
+                            Console.WriteLine($"{GetCurrentTime()} Новый пользователь в сети: {name} ({remoteEndPoint})");
                             SendMessages(users, $"Новый пользователь подключился к сети: {name} ({remoteEndPoint.Address})", remoteEndPoint);
                         }
                         continue;
@@ -208,13 +206,13 @@ class Program
                     {
                         users.Remove(remoteEndPoint);
                         SendMessages(users, $"Пользователь отключился от сети: {name} ({remoteEndPoint.Address})", remoteEndPoint);
-                        Console.WriteLine($"{GetCurrentTime()} Пользователь отключился: {name} ({remoteEndPoint.Address})");
+                        Console.WriteLine($"{GetCurrentTime()} Пользователь отключился: {name} ({remoteEndPoint})");
                         continue;
                     }
 
                     string formattedMessage = $"{name}: {command}";
                     SendMessages(users, formattedMessage, remoteEndPoint);
-                    Console.WriteLine($"{GetCurrentTime()} {formattedMessage}");
+                    Console.WriteLine($"{GetCurrentTime()} [{remoteEndPoint.Address}] {formattedMessage}");
                 }
                 catch (SocketException)
                 {
@@ -228,7 +226,7 @@ class Program
         {
             foreach (var user in users)
             {
-                if (user.Port != sender.Port || user.Address.Equals(sender.Address))
+                if (!(user.Address.Equals(sender.Address) && user.Port == sender.Port))
                 {
                     SendRequest(data, user);
                 }
@@ -290,7 +288,7 @@ class Program
 
             while (true)
             {
-                Console.WriteLine("Введите IP-адрес сервера::");
+                Console.WriteLine("Введите IP-адрес сервера:");
                 ipServer = Console.ReadLine();
                 if (IsValidIp(ipServer))
                     break;
